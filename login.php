@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $_SESSION['login'] = '';
     header('Location: ./');
   }
-  if (!empty($_GET['error'])) { 
+  if (!empty($_GET['error'])) {
     print('<div>Не верный пароль/логин проверьте корректность введенных данных</div>');
   }
 ?>
@@ -46,24 +46,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 }
 // Иначе, если запрос был методом POST, т.е. нужно сделать авторизацию с записью логина в сессию.
 else {
-  $user = 'u47501';
-  $pass = '1469373';
-  $db = new PDO('mysql:host=localhost;dbname=u47501', $user, $pass, array(PDO::ATTR_PERSISTENT => true)); // подруб к бд
+  $user = 'u47505';
+  $pass = '5503713';
+  $db = new PDO('mysql:host=localhost;dbname=u47505', $user, $pass, array(PDO::ATTR_PERSISTENT => true));
 
-  $member = $_POST['login']; 
-  $member_pass_hash = md5($_POST['pass']); // передача логина и пароля из бд и его кодировка
+  $member = $_POST['login'];
+  $member_pass_hash = md5($_POST['pass']);
 
   try {
-    $stmt = $db->prepare("SELECT * FROM members WHERE login = ?"); // включение лоигна из бд
+    $stmt = $db->prepare("SELECT * FROM members WHERE login = ?");
     $stmt->execute(array($member));
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
   } catch (PDOException $e) {
     print('Error : ' . $e->getMessage());
     exit();
   }
-  if ($result['pass'] == $member_pass_hash) { // загонка значения пароля в поле результат для проверки успеха авторизпции и выдачи ошибок есои что то не так
+  if ($result['pass'] == $member_pass_hash) {
 
-    $_SESSION['login'] = $_POST['login']; //перикидка логинов и паролей для подключения к админу если все прошло успешно
+    $_SESSION['login'] = $_POST['login'];
     $_SESSION['uid'] = $result['id'];
 
     header('Location: ./');

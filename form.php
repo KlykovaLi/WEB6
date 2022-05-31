@@ -26,10 +26,12 @@
     }
     print('</div>');
   }
-
   // Далее выводим форму отмечая элементы с ошибками классом error
   // и задавая начальные значения элементов ранее сохраненными.
   ?>
+    <div class="form-container">
+        <a href="admin.php">Учетная запись администратора</a>
+    </div><br>
   <div class="form-container">
     <div class="form-title">
       Форма
@@ -43,7 +45,7 @@
                                   print 'class="error"';
                                 } ?>>
         <span class="input-group-text" id="basic-addon1">Имя</span>
-        <input type="text" class="form-control" name="name" aria-describedby="basic-addon1" placeholder="Лиза" value="<?php print $values['name']; ?>" />
+        <input type="text" class="form-control" name="name" aria-describedby="basic-addon1" placeholder="Тарас" value="<?php print $values['name']; ?>" />
       </div>
       <div class="input-group" <?php if ($errors['email']) {
                                   print 'class="error"';

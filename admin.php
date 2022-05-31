@@ -1,35 +1,35 @@
 <?php
 
-$user = 'u47501';
-$pass = '1469373';
-$db = new PDO('mysql:host=localhost;dbname=u47501', $user, $pass, array(PDO::ATTR_PERSISTENT => true));
+$user = 'u47505';
+$pass = '5503713';
+$db = new PDO('mysql:host=localhost;dbname=u47505', $user, $pass, array(PDO::ATTR_PERSISTENT => true));
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') { 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($_POST['delete'])) {
-        $stmt = $db->prepare("SELECT * FROM members WHERE login = ?"); // получение логина пользователя
-        $stmt->execute(array($_POST['delete'])); // удаление юзера из бд
+        $stmt = $db->prepare("SELECT * FROM members WHERE login = ?");
+        $stmt->execute(array($_POST['delete']));
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (empty($result)) {
-            print('<p>Ошибка при удалении данных</p>'); // вывод ошибки если пытается редактировать пользователя которого нет в бд
+            print('<p>Ошибка при удалении данных</p>');
         } else {
-            $stmt = $db->prepare("DELETE FROM members WHERE login = ?"); // удаление админки
+            $stmt = $db->prepare("DELETE FROM members WHERE login = ?");
             $stmt->execute(array($_POST['delete']));
 
-            $powers = $db->prepare("DELETE FROM powers2 where user_login = ?"); // удаление юзера
+            $powers = $db->prepare("DELETE FROM powers2 where user_login = ?");
             $powers->execute(array($_POST['delete']));
             header('Location: ?delete_error=0');
         }
-    } else if (!empty($_POST['edit'])) { // подготовка бд к едиту данных о юзере
-        $user = 'u47501';
-        $pass = '1469373';
+    } else if (!empty($_POST['edit'])) {
+        $user = 'u47505';
+        $pass = '5503713';
         $member_id = $_POST['edit'];
 
-        $db = new PDO('mysql:host=localhost;dbname=u47501', $user, $pass, array(PDO::ATTR_PERSISTENT => true));
+        $db = new PDO('mysql:host=localhost;dbname=u47505', $user, $pass, array(PDO::ATTR_PERSISTENT => true));
         $stmt = $db->prepare("SELECT * FROM members WHERE login = ?");
         $stmt->execute(array($member_id));
-        $result = $stmt->fetch(PDO::FETCH_ASSOC); // подключение к бд
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        $values['name'] = $result['name']; // передача значений из бд которая отвечает за форму
+        $values['name'] = $result['name'];
         $values['email'] = $result['email'];
         $values['birth'] = $result['date'];
         $values['gender'] = $result['gender'];
@@ -37,14 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $values['bio'] = $result['bio'];
         $values['policy'] = $result['policy'];
 
-        setcookie('user_id', $member_id, time() + 12 * 30 * 24 * 60 * 60); // куки юзер айди для авторизации
+        setcookie('user_id', $member_id, time() + 12 * 30 * 24 * 60 * 60);
 
-        $powers = $db->prepare("SELECT * FROM powers2 WHERE user_login = ?"); // вывод таблицы бд суперсил
+        $powers = $db->prepare("SELECT * FROM powers2 WHERE user_login = ?");
         $powers->execute(array($member_id['login']));
         $result = $powers->fetch(PDO::FETCH_ASSOC);
         $values['select'] = $result['powers'];
     } else {
-        $name = $_POST['name']; // пересылка данных из бд в форму 
+        $name = $_POST['name'];
         $email = $_POST['email'];
         $date = $_POST['birth'];
         $gender = $_POST['gender'];
@@ -52,49 +52,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $bio = $_POST['bio'];
         $policy = $_POST['policy'];
         $select = implode(',', $_POST['select']);
-        $user = 'u47501';
-        $pass = '1469373';
-        $db = new PDO('mysql:host=localhost;dbname=u47501', $user, $pass, array(PDO::ATTR_PERSISTENT => true));
+        $user = 'u47505';
+        $pass = '5503713';
+        $db = new PDO('mysql:host=localhost;dbname=u47505', $user, $pass, array(PDO::ATTR_PERSISTENT => true));
 
         $member_id = $_COOKIE['user_id'];
 
         try {
-            $stmt = $db->prepare("SELECT login FROM members WHERE id = ?"); // подключение бд с формой пользователя
+            $stmt = $db->prepare("SELECT login FROM members WHERE id = ?");
             $stmt->execute(array($member_id));
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             setcookie('login_value', $result['login'], time() + 12 * 30 * 24 * 60 * 60);
 
             $stmt = $db->prepare("UPDATE members SET name = ?, email = ?, date = ?, gender = ?, limbs = ?, bio = ?, policy = ? WHERE login = ?");
-            $stmt->execute(array($name, $email, $date, $gender, $limbs, $bio, $policy, $result['login'])); // апдейт данных формы
+            $stmt->execute(array($name, $email, $date, $gender, $limbs, $bio, $policy, $result['login']));
 
-            $superpowers = $db->prepare("UPDATE powers2 SET powers = ? WHERE user_login = ? "); // апдейт данных суперсил
+            $superpowers = $db->prepare("UPDATE powers2 SET powers = ? WHERE user_login = ? ");
             $superpowers->execute(array($select, $result['login']));
         } catch (PDOException $e) {
-            print('Error : ' . $e->getMessage()); // выдача ошибки
+            print('Error : ' . $e->getMessage());
             exit();
         }
     }
 }
 
-if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) { // проверка полей на пустоту если пустые то выдает ошибку
+if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
     try {
         $stmt = $db->prepare("SELECT * FROM admins WHERE login = ?");
         $stmt->execute(array($_SERVER['PHP_AUTH_USER']));
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) { // вывод ошибки
+    } catch (PDOException $e) {
         print('Error : ' . $e->getMessage());
         exit();
     }
 
-    if (empty($result['password'])) { // путой пароль
+    if (empty($result['password'])) {
         header('HTTP/1.1 401 Unanthorized');
         header('WWW-Authenticate: Basic realm="My site"');
         print('<h1>401 Неверный логин</h1>');
         exit();
     }
 
-    if ($result['password'] != md5($_SERVER['PHP_AUTH_PW'])) { // нееверный пароль
+    if ($result['password'] != md5($_SERVER['PHP_AUTH_PW'])) {
         header('HTTP/1.1 401 Unanthorized');
         header('WWW-Authenticate: Basic realm="My site"');
         print('<h1>401 Неверный пароль</h1>');
@@ -103,15 +103,15 @@ if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) { // �
 
     print('Вы успешно авторизовались и видите защищенные паролем данные.');
 
-    $stmt = $db->prepare("SELECT * FROM members"); // вывод данных из формы из бд по форме
+    $stmt = $db->prepare("SELECT * FROM members");
     $stmt->execute([]);
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $stmt = $db->prepare("SELECT powers, COUNT(*) as owners FROM powers2 GROUP BY powers"); // вывод данных из бд по силам
+    $stmt = $db->prepare("SELECT powers, COUNT(*) as owners FROM powers2 GROUP BY powers");
     $stmt->execute();
     $powersCount = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } else {
-    header('HTTP/1.1 401 Unanthorized'); // ошибка если нет введенных данных
+    header('HTTP/1.1 401 Unanthorized');
     header('WWW-Authenticate: Basic realm="My site"');
     print('<h1>401 Требуется авторизация</h1>');
     exit();
@@ -136,12 +136,12 @@ if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) { // �
                 <th>Количество обладателей</th>
             </tr>
             <?php
-            if (!empty($powersCount)) { // количество суперсил
+            if (!empty($powersCount)) {
                 foreach ($powersCount as $value) {
             ?>
                     <tr>
                         <td><?php echo $value['powers'] ?></td>
-                        <td><?php echo $value['owners'] ?></td> 
+                        <td><?php echo $value['owners'] ?></td>
                     </tr>
             <?php }
             } ?>
@@ -159,18 +159,18 @@ if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) { // �
                 <th>Биография</th>
             </tr>
             <?php
-            if (!empty($result)) {  // замена
+            if (!empty($result)) {
                 foreach ($result as $value) {
             ?>
                     <tr>
-                        <td><?php echo $value['name'] ?></td> 
+                        <td><?php echo $value['name'] ?></td>
                         <td><?php echo $value['email'] ?></td>
                         <td><?php echo $value['date'] ?></td>
                         <td><?php echo $value['limbs'] ?></td>
                         <td><?php echo $value['gender'] ?></td>
                         <td>
                             <?php
-                            $powers = $db->prepare("SELECT * FROM powers2 where user_login = ?"); // подготовока формы к выводу данных по суперсилам
+                            $powers = $db->prepare("SELECT * FROM powers2 where user_login = ?");
                             $powers->execute(array($value['login']));
                             $superpowers = $powers->fetch(PDO::FETCH_ASSOC);
                             echo $superpowers['powers'];
@@ -185,15 +185,13 @@ if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) { // �
                                 <button id="edit">Edit</button>
                             </form>
                         </td>
-                     
-                        <td class="edit-buttons">  
+                        <td class="edit-buttons">
                             <form action="" method="post">
                                 <input value="<?php echo $value['login'] ?>" name="delete" type="hidden" />
                                 <button id="delete">Delete</button>
                             </form>
                         </td>
-                    </tr> 
-  
+                    </tr>
             <?php
                 }
             } else {
